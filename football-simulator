@@ -1,0 +1,95 @@
+import random
+class Team:
+  def __init__(self, name, style, division=2, rating=75, wins=0, losses=0, draws=0):
+    self.name = name
+    self.division = division
+    self.style = style
+    self.rating = rating
+    self.wins = wins
+    self.losses = losses
+    self.draws = draws
+    self.trainings_completed = 0
+
+  def __repr__(self):
+    return "{name} is a team in division {division}. They play {style} football. Their rating this season is {rating}.".format(name=self.name, division=self.division, style=self.style, rating=self.rating)
+  
+  def training(self):
+    if self.trainings_completed < 3:
+      training_gain = random.randint(-11, 11)
+      self.rating += training_gain
+      self.trainings_completed += 1
+      print("Training is done, your teams new rating is {rating}".format(rating=self.rating))
+    else:
+      print("You have already completed 3 trainings for this game session.")
+
+  def game(self, other_team):
+    if self.rating > other_team.rating:
+      self.wins += 1
+      other_team.losses += 1
+      print("{name} has won the match, this is win number {wins} of the season!".format(name=self.name, wins=self.wins))
+    elif self.rating < other_team.rating:
+      self.losses += 1
+      other_team.wins += 1
+      print("{name} has lost the match, this is loss number {losses} of the season!".format(name=self.name, losses=self.losses))
+    else:
+      self.draws += 1
+      other_team.draws += 1
+      print("{name} has drawn the match, this is draw number {draws} of the season!".format(name=self.name, draws=self.draws))
+
+
+class Matchday:
+  def __init__(self, teams):
+    self.teams = teams
+    self.matchups = self.create_matchups()
+
+  def create_matchups(self):
+    matchups = []
+    used_teams = []
+    for team in self.teams:
+      other_teams = [t for t in self.teams if t != team and t not in used_teams]
+      if other_teams:
+        other_team = random.choice(other_teams)
+        used_teams.append(team)
+        used_teams.append(other_team)
+        matchups.append((team, other_team))
+    return matchups
+
+  def simulate_games(self):
+    for matchup in self.matchups:
+      team1, team2 = matchup
+      print("Matchup: {team1} vs {team2}".format(team1=team1.name, team2=team2.name))
+      team1.game(team2)
+      print("") # add a blank line for readability
+
+  def display_results(self):
+    print("Matchday Results:")
+    for team in self.teams:
+      print("{name}: {wins} wins, {losses} losses, {draws} draws".format(name=team.name, wins=team.wins, losses=team.losses, draws=team.draws))
+
+team1 = Team("Cheltenham City", "possession-based", rating=68)
+team2 = Team("West Browwich Albion", "counter-attacking", rating=72)
+team3 = Team("Southampton Park Rovers", "pressing", rating=70)
+team4 = Team("Leeds United Stars", "direct", rating=74)
+
+team_choices = [team1, team2, team3, team4]
+
+print("Welcome to the Premier League Parody! Please select your team.")
+print("Teams:")
+for i, team in enumerate(team_choices):
+    print("{num}. {name}".format(num=i+1, name=team.name))
+
+player1_choice = int(input("Player 1, enter your choice (1-4): "))
+player2_choice = int(input("Player 2, enter your choice (1-4, different from player 1): "))
+
+while player2_choice == player1_choice or player2_choice < 1 or player2_choice > 4:
+    player2_choice = int(input("Invalid choice. Player 2, enter your choice (1-4, different from player 1): "))
+
+player1_team = team_choices[player1_choice - 1]
+player2_team = team_choices[player2_choice - 1]
+
+matchday1 = Matchday([player1_team, player2_team])
+matchday1.simulate_games()
+
+print("Final Results:")
+print("{name}: {wins} wins, {losses} losses, {draws} draws".format(name=player1_team.name, wins=player1_team.wins, losses=player1_team.losses, draws=player1_team.draws))
+print("{name}: {wins} wins, {losses} losses, {draws} draws".format(name=player2_team.name, wins=player2_team.wins, losses=player2_team.losses, draws=player2_team.draws))
